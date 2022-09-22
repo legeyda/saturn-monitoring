@@ -6,6 +6,7 @@ sudo apt update
 sudo apt install curl
 
 # binary
+mkdir /opt/bin
 sudo cp saturn-monitoring.sh /opt/bin/saturn-monitoring
 sudo chmod ugo+x /opt/bin/saturn-monitoring
 
