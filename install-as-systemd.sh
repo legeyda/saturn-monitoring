@@ -10,7 +10,7 @@ sudo apt install curl
 # binary
 mkdir -p /opt/bin
 sudo cp saturn-monitoring.sh /opt/bin/"${UNIT_NAME}"
-sudo chmod ugo+x /opt/bin/"${$UNIT_NAME}"
+sudo chmod ugo+x /opt/bin/"${UNIT_NAME}"
 
 # service
 sudo dd of="/etc/systemd/system/$UNIT_NAME.service" <<EOF
@@ -35,6 +35,6 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable "${$UNIT_NAME}"
-sudo systemctl stop   "${$UNIT_NAME}"
-sudo systemctl start  "${$UNIT_NAME}"
+sudo systemctl enable "${UNIT_NAME}"
+sudo systemctl stop   "${UNIT_NAME}"
+sudo systemctl start  "${UNIT_NAME}"
