@@ -9,7 +9,7 @@ sudo apt install curl
 
 # binary
 mkdir -p /opt/bin
-sudo cp saturn-monitoring.sh /opt/bin/"${$UNIT_NAME}"
+sudo cp saturn-monitoring.sh /opt/bin/"${UNIT_NAME}"
 sudo chmod ugo+x /opt/bin/"${$UNIT_NAME}"
 
 # service
