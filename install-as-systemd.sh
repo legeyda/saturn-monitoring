@@ -1,17 +1,19 @@
 #/usr/bin/env bash
 set -eu
 
+: "${UNIT_NAME:=saturn-monitoring}"
+
 # dependency
 sudo apt update
 sudo apt install curl
 
 # binary
 mkdir -p /opt/bin
-sudo cp saturn-monitoring.sh /opt/bin/saturn-monitoring
-sudo chmod ugo+x /opt/bin/saturn-monitoring
+sudo cp saturn-monitoring.sh /opt/bin/"${$UNIT_NAME}"
+sudo chmod ugo+x /opt/bin/"${$UNIT_NAME}"
 
 # service
-sudo dd of="/etc/systemd/system/saturn-monitoring.service" <<EOF
+sudo dd of="/etc/systemd/system/$UNIT_NAME.service" <<EOF
 [Unit]
 After=network-online.target
 Requires=network-online.target
@@ -33,6 +35,6 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable saturn-monitoring
-sudo systemctl stop   saturn-monitoring
-sudo systemctl start  saturn-monitoring
+sudo systemctl enable "${$UNIT_NAME}"
+sudo systemctl stop   "${$UNIT_NAME}"
+sudo systemctl start  "${$UNIT_NAME}"

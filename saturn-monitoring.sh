@@ -27,9 +27,7 @@ PREVIOUS_PING_DATE=$(today)
 
 function check() {
 	CHECK_DETAILS=$(curl --verbose -X "$TARGET_METHOD" "$TARGET_URL" 2>&1) || return 1
-	echo 'here 1'
 	if [[ "$TARGET_REQUIRE_2XX" != 'false' ]]; then
-		echo 'here 2'
 		echo "$CHECK_DETAILS" | grep -q '< HTTP/1.1 2' || return 1
 	fi
 }
