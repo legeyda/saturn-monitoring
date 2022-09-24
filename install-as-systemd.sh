@@ -29,7 +29,7 @@ Environment=CHECK_DAILY_PING="${CHECK_DAILY_PING:-true}"
 User=$USER
 Group=$USER
 Restart=always
-ExecStart=/opt/bin/saturn-monitoring
+ExecStart=/opt/bin/${UNIT_NAME}
 [Install]
 WantedBy=multi-user.target
 EOF

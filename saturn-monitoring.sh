@@ -38,11 +38,11 @@ function send-message() {
 }
 
 function on-exit() {
-	send-message "🙈 Monitoring goes down"
+	send-message "🙈 $TARGET_NAME monitoring goes down"
 }
 trap on-exit EXIT
 
-send-message "👁 Monitoring goes up"
+send-message "👁 $TARGET_NAME monitoring goes up"
 while true; do
 	if check; then
 		if [[ up != "$PREVIOUS_STATUS" ]]; then
@@ -53,11 +53,11 @@ while true; do
 		if [[ down != "$PREVIOUS_STATUS" ]]; then
 			send-message "💀 $TARGET_NAME unavailable! Request $TARGET_METHOD $TARGET_URL failed, details below.%0A%0A$CHECK_DETAILS"
 			PREVIOUS_STATUS=down
-		fi	
+		fi
 	fi
 
-	if [[ "$CHECK_DAILY_PING" == 'true' ]] && [[ $PREVIOUS_PING_DATE != $(today) ]] && [[ $(now) > $(today)_10 ]]; then
-		send-message "👌 Monitoring goes on"
+	if [[ "$CHECK_DAILY_PING" == 'true' ]] && [[ $PREVIOUS_PING_DATE != $(today) ]] && [[ $(now) > $(today)_12 ]]; then
+		send-message "👌 $TARGET_NAME monitoring goes on"
 		PREVIOUS_PING_DATE=$(today)
 	fi
 
