@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -eu
 
-: "${TELEGRAM_API_KEY}"
-: "${TELEGRAM_CHAT_ID}"
-: "${TARGET_NAME:=Service}"
-: "${TARGET_URL}"
-: "${TARGET_METHOD:=GET}"
-: "${TARGET_REQUIRE_2XX:=true}"
-: "${CHECK_INTERVAL:=60}"
-: "${RESEND_TIMEOUT:=$[24*60*60]}"
-
-
 
 function main() {
+
+	: "${TELEGRAM_API_KEY}"
+	: "${TELEGRAM_CHAT_ID}"
+	: "${TARGET_NAME:=Service}"
+	: "${TARGET_URL}"
+	: "${TARGET_METHOD:=GET}"
+	: "${TARGET_REQUIRE_2XX:=true}"
+	: "${CHECK_INTERVAL:=60}"
+	: "${RESEND_TIMEOUT:=$[24*60*60]}"
+
 	trap on-exit EXIT
 
 	local send_timestamp=0
@@ -57,7 +57,7 @@ function is-resend-timeout() {
 	[[ $RESEND_TIMEOUT -le 0 ]] && return 1
 	#[[ $(now) < $(today)_12 ]] && return 1
 	#[[ $(now) > $(today)_20 ]] && return 1
-	(( $(timestamp) <= $send_timestamp + $RESEND_TIMEOUT )) && return 1
+	(( $(timestamp) < $send_timestamp + $RESEND_TIMEOUT )) && return 1
 	return 0
 }
 
@@ -70,9 +70,14 @@ function check() {
 		curl_args="-X $TARGET_METHOD"
 	fi
 
-	curl --verbose $curl_args "$TARGET_URL" 2>&1 || return 1
+	local check_details
+	local check_result
+	check_details=$(curl --verbose $curl_args "$TARGET_URL" 2>&1) && check_result=$? || check_result=$?
+
+	test 0 != $check_result && return $check_result
+	
 	if [[ "$TARGET_REQUIRE_2XX" != 'false' ]]; then
-		echo "$check_details" | grep -Eqx '< HTTP/[^ ]+ 2[0-9]+' || return 1
+		echo "$check_details" | grep -Eq '^< HTTP/[^ ]+ 2[0-9]+' || return 1
 	fi
 
 	return 0
@@ -93,17 +98,6 @@ function timestamp() {
 
 # ================================
 
-# env: DEBUG?
-#      BASH_SOURCE?
-entry-point() {
-	set -eu
-	if [[ true == "${DEBUG:-}" ]]; then
-		set -x
-	fi
-	local script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-	script_dir="$script_dir" main "$@"
-}
-
 # env: BASH_SOURCE
 #      0
 function script-is-sourced() {
@@ -111,4 +105,10 @@ function script-is-sourced() {
     test "${BASH_SOURCE[0]}" != "${0}" || return 1
 }
 
-entry-point "$@"
+if ! script-is-sourced; then
+	set -eu
+	if [[ true == "${DEBUG:-}" ]]; then
+		set -x
+	fi
+	script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )" main "$@"
+fi
